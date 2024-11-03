@@ -2,7 +2,6 @@
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import Link from "next/link";
 import PokemonItem from "@/components/PokemonItem";
 
 const FavoritesPage = () => {

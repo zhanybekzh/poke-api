@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { addFavorite, removeFavorite } from "@/store/features/favoritesSlice";
+import Image from "next/image";
 
 const PokemonDetailContent = ({
   name,
@@ -40,11 +41,13 @@ const PokemonDetailContent = ({
       <div className="pokemon-detail bg-white text-black mx-auto rounded-lg p-5 gap-2 mt-5 flex flex-col items-start  min-h-[500px] relative">
         <h1 className="mx-auto font-bold text-2xl">{pokemon.name}</h1>
         <div className="w-[50%] aspect-square flex items-center justify-center mx-auto">
-          <img
+          <Image
             src={pokemon.sprites.front_default}
-            alt={pokemon.name}
+            alt={`$pokemon {pokemon.name} image`}
+            width={300}
+            height={150}
             className="w-[100%] object-cover"
-          />
+          ></Image>
         </div>
         <p>
           <b>Weight:</b> {pokemon.weight}
