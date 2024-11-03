@@ -24,12 +24,9 @@ const PokemonList: React.FC = () => {
     const cachedData = localStorage.getItem("cachedPokemons");
     return cachedData ? JSON.parse(cachedData) : [];
   });
+
   const [pokemonList, setPokemonList] = useState<Pokemon[]>(cachedPokemons);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [offset, setOffset] = useState<number>(() => {
-    const cachedOffset = localStorage.getItem("offset");
-    return cachedOffset ? parseInt(cachedOffset, 10) : 0;
-  });
   const [offset, setOffset] = useState<number>(() => {
     const cachedOffset = localStorage.getItem("offset");
     return cachedOffset ? parseInt(cachedOffset, 10) : 0;
@@ -39,30 +36,6 @@ const PokemonList: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>("");
 
   const limit = 20;
-
-  const loadPokemons = async (currentOffset: number) => {
-    setIsLoading(true);
-    try {
-      const data = await fetchPokemonList(currentOffset, limit);
-      const detailedPokemons = await Promise.all(
-        data?.results.map(async (pokemon: Pokemon) => {
-          const details = await fetchPokemonDetails(pokemon.url);
-          return {
-            ...pokemon,
-            types: details?.types.map((typeInfo: any) => typeInfo.type.name),
-            imageUrl: details.sprites.front_default,
-          };
-        })
-      );
-      const newCachedPokemons = [...cachedPokemons, ...detailedPokemons];
-      setCachedPokemons(newCachedPokemons);
-      setPokemonList(newCachedPokemons);
-    } catch (error) {
-      console.error("Error fetching Pokémon list", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const loadPokemons = async (currentOffset: number) => {
     setIsLoading(true);
@@ -114,25 +87,7 @@ const PokemonList: React.FC = () => {
     } else {
       setPokemonList(cachedPokemons);
     }
-    if (cachedPokemons.length < offset + limit) {
-      loadPokemons(offset);
-    } else {
-      setPokemonList(cachedPokemons);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (cachedPokemons.length < offset + limit) {
-      loadPokemons(offset);
-    } else {
-      setPokemonList(cachedPokemons);
-    }
   }, [offset]);
-
-  useEffect(() => {
-    localStorage.setItem("cachedPokemons", JSON.stringify(cachedPokemons));
-    localStorage.setItem("offset", offset.toString());
-  }, [cachedPokemons, offset]);
 
   useEffect(() => {
     localStorage.setItem("cachedPokemons", JSON.stringify(cachedPokemons));
@@ -163,7 +118,6 @@ const PokemonList: React.FC = () => {
   return (
     <>
       <div className="flex gap-1 min-[500px]:gap-3 sm:p-0 mb-4 flex-wrap justify-stretch p-2">
-      <div className="flex gap-1 min-[500px]:gap-3 sm:p-0 mb-4 flex-wrap justify-stretch p-2">
         <input
           type="text"
           value={searchTerm}
@@ -174,7 +128,6 @@ const PokemonList: React.FC = () => {
         <select
           value={selectedType}
           onChange={handleTypeChange}
-          className="p-2 border text-black w-[100%] min-[500px]:w-[auto] border-gray-300 rounded-lg"
           className="p-2 border text-black w-[100%] min-[500px]:w-[auto] border-gray-300 rounded-lg"
         >
           <option value="">All Types</option>
